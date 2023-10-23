@@ -14,12 +14,15 @@ app.get("/api/accounts", (req, res) => {
 
 app.post("/api/accounts/", (req, res) => {
   const newId = accounts[accounts.length - 1].id + 1;
-  accounts.push({
+  const username = req.body.username;
+  if (!username) return res.status(400).json("please enter username");
+  const newAccount = {
     id: newId,
-    username: req.body.username,
+    username: username,
     funds: 0,
-  });
-  res.status(200).json(accounts);
+  };
+  accounts.push(newAccount);
+  res.status(201).json(accounts);
 });
 
 app.delete("/api/accounts/:id", (req, res) => {
@@ -34,10 +37,17 @@ app.delete("/api/accounts/:id", (req, res) => {
 });
 
 app.put("/api/accounts/:id", (req, res) => {
+  const { username, funds } = req.body;
   const account = accounts.find((account) => {
     return account.id == req.params.id;
   });
-  account = req.body;
+  if (username) {
+    account.username = username;
+  }
+  if (funds) {
+    account.funds = funds;
+  }
+
   res.status(200).json(account);
 });
 
